@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BEALIVE — SMM Load Calculator</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f1ea;color:#171717}
+.wrap{max-width:760px;margin:auto;padding:28px 16px 48px}
+.brand{font-weight:900;letter-spacing:-.04em;font-size:28px}.brand span{font-weight:500}
+h1{font-size:clamp(30px,7vw,54px);line-height:.98;letter-spacing:-.055em;margin:28px 0 12px}
+.sub{color:#666;line-height:1.45;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card{background:#fff;border:1px solid #ddd8cf;border-radius:16px;padding:14px}
+label{display:block;font-weight:750;font-size:14px;margin-bottom:8px}
+input{width:100%;font-size:18px;padding:11px 12px;border:1px solid #cfcac1;border-radius:10px;background:#fff}
+small{display:block;color:#888;margin-top:6px}
+.result{margin-top:14px;background:#171717;color:#fff;border-radius:20px;padding:20px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:#292929;border-radius:14px;padding:14px}.kpi small{color:#aaa}.big{font-size:34px;font-weight:850;letter-spacing:-.04em;margin-top:4px}
+.message{margin-top:12px;background:#fff;color:#171717;border-radius:14px;padding:14px;line-height:1.4}
+button{margin-top:14px;width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:800;cursor:pointer;background:#e6d6b8;color:#171717}
+.note{font-size:12px;color:#777;margin-top:12px;line-height:1.4}
+@media(max-width:520px){.grid,.kpis{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">BEALIVE<span>.agency</span></div>
+  <h1>SMM LOAD<br>CALCULATOR</h1>
+  <div class="sub">Посчитай, сколько реальной работы лежит на одном SMM-специалисте. Введи объём задач за месяц.</div>
+
+  <div class="grid">
+    <div class="card"><label>Reels / короткие видео</label><input id="reels" type="number" min="0" value="20"><small>≈ 1,5 ч за ролик</small></div>
+    <div class="card"><label>Посты</label><input id="posts" type="number" min="0" value="12"><small>≈ 1 ч за пост</small></div>
+    <div class="card"><label>Stories</label><input id="stories" type="number" min="0" value="150"><small>≈ 10 мин за story</small></div>
+    <div class="card"><label>Съёмки</label><input id="shoots" type="number" min="0" value="4"><small>≈ 4 ч за съёмку</small></div>
+    <div class="card"><label>Монтаж видео</label><input id="edits" type="number" min="0" value="0"><small>≈ 1,5 ч за видео</small></div>
+    <div class="card"><label>Дизайн</label><input id="design" type="number" min="0" value="12"><small>≈ 1 ч за единицу</small></div>
+    <div class="card"><label>Аналитика / отчёты</label><input id="analytics" type="number" min="0" value="4"><small>≈ 2 ч за отчёт</small></div>
+    <div class="card"><label>Коммуникация и правки</label><input id="communication" type="number" min="0" value="20"><small>часы в месяц</small></div>
+  </div>
+
+  <div class="result">
+    <div class="kpis">
+      <div class="kpi"><small>Расчётная нагрузка</small><div id="hours" class="big">0 ч</div></div>
+      <div class="kpi"><small>Загрузка</small><div id="load" class="big">0%</div></div>
+    </div>
+    <div class="message" id="message">Введите объём задач.</div>
+    <button id="reset">Сбросить расчёт</button>
+  </div>
+
+  <div class="note">Расчёт ориентировочный: фактическое время зависит от сложности контента, количества согласований, уровня специалиста и процессов в команде. База расчёта — 160 рабочих часов в месяц.</div>
+</div>
+
+<script>
+const rates={reels:1.5,posts:1,stories:1/6,shoots:4,edits:1.5,design:1,analytics:2,communication:1};
+const ids=Object.keys(rates);
+const $=id=>document.getElementById(id);
+function val(id){return Math.max(0,Number($(id).value)||0)}
+function calc(){
+ let hours=ids.reduce((s,id)=>s+val(id)*rates[id],0);
+ let load=hours/160*100;
+ $("hours").textContent=(Math.round(hours*10)/10)+" ч";
+ $("load").textContent=Math.round(load)+"%";
+ let m;
+ if(hours===0)m="Добавь задачи, чтобы увидеть расчёт.";
+ else if(load<=70)m="Есть запас по загрузке. Можно добавить задачи или оставить время на развитие, идеи и форс-мажоры.";
+ else if(load<=100)m="Загрузка укладывается в ориентир одного специалиста.";
+ else if(load<=125)m="Специалист уже перегружен. Стоит перераспределить часть задач или убрать лишние процессы.";
+ else m="Критическая загрузка. При таком объёме задач одного человека, скорее всего, недостаточно.";
+ $("message").textContent=m;
+}
+ids.forEach(id=>$(id).addEventListener("input",calc));
+$("reset").addEventListener("click",()=>{ids.forEach(id=>$(id).value=0);calc()});
+calc();
+</script>
+</body>
+</html>
